@@ -73,6 +73,29 @@ public class ServicioProducto {
         }
     }
 
+    public List<ProductoRespuestaDTO> buscarProductosPorTexto(String texto){
+
+        List<Producto> productosEncontrados = repositorioProducto.findByNombreContainingOrCategoriaNombreContainingOrDescripcionContaining(texto, texto, texto);
+        List<ProductoRespuestaDTO> productosEncontradosDTOS = new ArrayList<>();
+
+        /**ESTO LO PUEDO CONVERTIR EN UN MÉRTODO Y LO PUEDO OBTIMIZAR PORQUE SE REPITE EN BUSCARPRODUCTOS() TAMBIÉN*/
+
+        if (!productosEncontrados.isEmpty()) {
+            for (Producto producto : productosEncontrados) {
+                List<String> listaUrls = new ArrayList<>();
+                for (Imagen urlImagen : producto.getImagenes()) {
+                    listaUrls.add(urlImagen.getUrl());
+                }
+                productosEncontradosDTOS.add(new ProductoRespuestaDTO(producto.getId(), producto.getNombre(), producto.getDescripcion(), producto.getCategoria().getNombre(), listaUrls));
+            }
+
+            return productosEncontradosDTOS;
+
+        } else {
+            throw new IllegalStateException("No existen productos registrados en el sistema");
+        }
+    }
+
     public List<ProductoRespuestaDTO> buscarProductos() {
 
         List<Producto> listProductos = repositorioProducto.findAll();
